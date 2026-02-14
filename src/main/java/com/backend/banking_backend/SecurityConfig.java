@@ -28,46 +28,47 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-      .csrf(csrf -> csrf.disable())
-      .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-      .sessionManagement(session ->
-          session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      )
-      .authorizeHttpRequests(auth -> auth
-          .requestMatchers("/auth/**").permitAll()
-          .requestMatchers("/transactions/**").permitAll()
-          .anyRequest().authenticated()
-      )
-      .exceptionHandling(e -> e
-          .authenticationEntryPoint((request, response, authException) -> {
-              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-              response.getWriter().write("Unauthorized");
-          })
-      )
-      .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+      http
+          .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+          .csrf(csrf -> csrf.disable())
+          .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+          .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+          .authorizeHttpRequests(auth -> auth
+              .requestMatchers("/auth/**").permitAll()
+              .requestMatchers("/transactions/**").authenticated() // exige token
+              .anyRequest().authenticated()
+          )
+          .exceptionHandling(e -> e
+              .authenticationEntryPoint((request, response, authException) -> {
+                  response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                  response.getWriter().write("Unauthorized");
+              })
+          )
+          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
       return http.build();
   }
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of(
-            "http://localhost:4200",
-            "https://rubensinternetbanking.vercel.app",
-            "https://internet-banking-git-main-rubens-projects-1b4c900a.vercel.app",
-            "https://internet-banking-kdozt76w7-rubens-projects-1b4c900a.vercel.app"
-    ));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowCredentials(true);
-    configuration.setExposedHeaders(List.of("Authorization"));
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setMaxAge(3600L);
+      CorsConfiguration configuration = new CorsConfiguration();
+      configuration.setAllowedOrigins(List.of(
+          "http://localhost:4200",
+          "https://rubensinternetbanking.vercel.app",
+          "https://internet-banking-git-main-rubens-projects-1b4c900a.vercel.app",
+          "https://internet-banking-kdozt76w7-rubens-projects-1b4c900a.vercel.app"
+      ));
+      configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+      configuration.setAllowCredentials(true);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
+      // ✅ Importante: Authorization precisa estar aqui
+      configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+      configuration.setExposedHeaders(List.of("Authorization"));
+      configuration.setMaxAge(3600L);
+
+      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+      source.registerCorsConfiguration("/**", configuration);
+      return source;
   }
+
 }

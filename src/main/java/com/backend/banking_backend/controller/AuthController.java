@@ -31,10 +31,14 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        // Buscar conta do usuário
+        var account = user.getAccounts().stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("Usuário não possui conta"));
+
         String token = jwtService.generateToken(user);
 
         return ResponseEntity.ok(
-                new AuthResponse(token, user.getCpf(), user.getName())
+                new AuthResponse(token, user.getCpf(), user.getName(), account.getId())
         );
     }
 
@@ -43,11 +47,14 @@ public class AuthController {
 
         try {
             User savedUser = userService.registerUser(user);
+            // Buscar conta do usuário
+        var account = user.getAccounts().stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("Usuário não possui conta"));
 
             String token = jwtService.generateToken(savedUser);
 
             return ResponseEntity.ok(
-                    new AuthResponse(token, savedUser.getCpf(), savedUser.getName())
+                    new AuthResponse(token, savedUser.getCpf(), savedUser.getName(), account.getId())
             );
 
         } catch (RuntimeException e) {
@@ -65,10 +72,16 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha inválida");
         }
 
+        // Buscar conta do usuário
+        var account = user.getAccounts().stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("Usuário não possui conta"));
+
         String token = jwtService.generateToken(user);
 
+        // Retornar token + contaId
         return ResponseEntity.ok(
-                new AuthResponse(token, user.getCpf(), user.getName())
+                new AuthResponse(token, user.getCpf(), user.getName(), account.getId())
         );
     }
+
 }

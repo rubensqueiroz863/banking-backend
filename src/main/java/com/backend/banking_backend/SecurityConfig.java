@@ -37,6 +37,7 @@ public class SecurityConfig {
       )
       .authorizeHttpRequests(auth -> auth
           .requestMatchers("/auth/**").permitAll()
+          .requestMatchers("/transactions/**").permitAll()
           .anyRequest().authenticated()
       )
       .exceptionHandling(e -> e

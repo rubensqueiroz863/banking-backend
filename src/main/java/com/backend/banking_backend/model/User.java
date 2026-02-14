@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "Users")
-
 public class User {
   @Id
   @Column
@@ -26,4 +25,9 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Account> accounts;
+
+  @Override
+  public String toString() {
+      return "User{id=" + id + ", email=" + email + ", name=" + name + "}";
+  }
 }

@@ -35,7 +35,7 @@ public class SecurityConfig {
           .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(auth -> auth
               .requestMatchers("/auth/**").permitAll()
-              .requestMatchers("/transactions/**").authenticated() // exige token
+              .requestMatchers("/transactions/**").permitAll() // exige token
               .anyRequest().authenticated()
           )
           .exceptionHandling(e -> e

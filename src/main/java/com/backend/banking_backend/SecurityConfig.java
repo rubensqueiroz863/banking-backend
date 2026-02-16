@@ -36,6 +36,7 @@ public class SecurityConfig {
           .authorizeHttpRequests(auth -> auth
               .requestMatchers("/auth/**").permitAll()
               .requestMatchers("/transactions/**").permitAll() // exige token
+              .requestMatchers("/account/**").permitAll()
               .anyRequest().authenticated()
           )
           .exceptionHandling(e -> e

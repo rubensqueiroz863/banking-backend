@@ -101,7 +101,9 @@ public class TransactionService {
                 transaction.getId(),
                 transaction.getAmount(),
                 transaction.getType(),
-                transaction.getCreatedAt()
+                transaction.getCreatedAt(),
+                transaction.getFromAccount().getUser().getName(),
+                transaction.getToAccount().getUser().getName()
         );
     }
 }

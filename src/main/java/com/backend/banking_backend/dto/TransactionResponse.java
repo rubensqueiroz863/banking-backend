@@ -7,5 +7,7 @@ public record TransactionResponse(
         String id,
         BigDecimal amount,
         String type,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String fromName,
+        String toName
 ) {}

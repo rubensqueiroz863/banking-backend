@@ -9,5 +9,7 @@ public record TransactionResponse(
         String type,
         LocalDateTime createdAt,
         String fromName,
-        String toName
+        String toName,
+        String fromAccountId,
+        String toAccountId
 ) {}

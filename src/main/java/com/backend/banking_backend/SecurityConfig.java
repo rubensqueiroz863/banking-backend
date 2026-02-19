@@ -55,6 +55,7 @@ public class SecurityConfig {
       CorsConfiguration configuration = new CorsConfiguration();
       configuration.setAllowedOrigins(List.of(
           "http://localhost:4200",
+          "http://10.0.0.36:4200/",
           "https://rubensinternetbanking.vercel.app",
           "https://internet-banking-git-main-rubens-projects-1b4c900a.vercel.app",
           "https://internet-banking-kdozt76w7-rubens-projects-1b4c900a.vercel.app"

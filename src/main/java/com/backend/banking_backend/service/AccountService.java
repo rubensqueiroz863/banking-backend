@@ -1,7 +1,5 @@
 package com.backend.banking_backend.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
 import com.backend.banking_backend.dto.AccountResponse;

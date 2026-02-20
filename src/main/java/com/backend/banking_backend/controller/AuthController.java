@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
 import com.backend.banking_backend.model.User;
-import com.backend.banking_backend.model.LoginRequest;
+import com.backend.banking_backend.dto.UserResponse;
 import com.backend.banking_backend.model.AuthResponse;
+import com.backend.banking_backend.model.LoginRequest;
 import com.backend.banking_backend.service.JwtService;
 import com.backend.banking_backend.service.UserService;
 import com.backend.banking_backend.repository.UserRepository;
@@ -46,15 +47,15 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody User user) {
 
         try {
-            User savedUser = userService.registerUser(user);
-            // Buscar conta do usuário
-        var account = user.getAccounts().stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("Usuário não possui conta"));
+            UserResponse savedUserResponse = userService.registerUser(user);
 
-            String token = jwtService.generateToken(savedUser);
+            var account = user.getAccounts().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("Usuário não possui conta"));
+
+            String token = jwtService.generateToken(user); // ou use o User salvo do repositório
 
             return ResponseEntity.ok(
-                    new AuthResponse(token, savedUser.getCpf(), savedUser.getName(), account.getId())
+                    new AuthResponse(token, savedUserResponse.cpf(), savedUserResponse.name(), account.getId())
             );
 
         } catch (RuntimeException e) {

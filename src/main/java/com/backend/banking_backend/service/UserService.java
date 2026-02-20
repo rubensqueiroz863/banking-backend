@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 
 import com.backend.banking_backend.model.User;
+import com.backend.banking_backend.dto.AccountResponse;
+import com.backend.banking_backend.dto.UserResponse;
 import com.backend.banking_backend.model.Account;
 import com.backend.banking_backend.repository.UserRepository;
 import com.backend.banking_backend.repository.AccountRepository;
@@ -23,38 +25,50 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User registerUser(User user) {
+    public UserResponse registerUser(User user) {
 
         if (userRepository.findByCpf(user.getCpf()).isPresent()) {
             throw new RuntimeException("CPF já cadastrado");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        
         User savedUser = userRepository.save(user);
-
-        Account account = createAccount(savedUser);
-
-        accountRepository.save(account);
-
-        return savedUser;
+        
+       createAccount(user);
+        
+        return new UserResponse(
+        	savedUser.getId(),
+        	savedUser.getEmail(),
+        	savedUser.getPassword(),
+        	savedUser.getName(),
+        	savedUser.getCpf()
+        );
     }
 
-    private Account createAccount(User user) {
+    private AccountResponse createAccount(User user) {
 
         Account account = new Account();
-
-        account.setBankCode("001");      // banco fictício
-        account.setAgency("0001");       // agência padrão
+        account.setBankCode("001");
+        account.setAgency("0001");
         account.setBalance(BigDecimal.ZERO);
-
+        
         String accountNumber = generateUniqueAccountNumber();
         account.setAccountNumber(accountNumber);
         account.setCheckDigit(generateCheckDigit(accountNumber));
 
         account.setUser(user);
+        
+        Account savedAccount = accountRepository.save(account);
 
-        return account;
+        return new AccountResponse(
+        	savedAccount.getId(),
+        	savedAccount.getBankCode(),
+        	savedAccount.getAgency(),
+        	savedAccount.getAccountNumber(),
+        	savedAccount.getCheckDigit(),
+        	savedAccount.getBalance()
+        );
     }
 
     private String generateUniqueAccountNumber() {
